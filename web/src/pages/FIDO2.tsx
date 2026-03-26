@@ -614,9 +614,9 @@ export default function FIDO2() {
                 })
                 console.log('[FIDO2] MakeCredential response:', response)
                 setSuccessMessage('MakeCredential command sent successfully')
-              } catch (err: any) {
+              } catch (err: unknown) {
                 console.error('[FIDO2] MakeCredential error:', err)
-                setError(err.message || 'MakeCredential command failed')
+                setError(err instanceof Error ? err.message : 'MakeCredential command failed')
               } finally {
                 setLoading(false)
               }
@@ -640,9 +640,9 @@ export default function FIDO2() {
                 })
                 console.log('[FIDO2] GetAssertion response:', response)
                 setSuccessMessage('GetAssertion command sent successfully')
-              } catch (err: any) {
+              } catch (err: unknown) {
                 console.error('[FIDO2] GetAssertion error:', err)
-                setError(err.message || 'GetAssertion command failed')
+                setError(err instanceof Error ? err.message : 'GetAssertion command failed')
               } finally {
                 setLoading(false)
               }
