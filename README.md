@@ -1,142 +1,59 @@
 # Feitian SK Manager
 
-A modern web-based management tool for Feitian Security Keys, supporting FIDO2, U2F, PIV, OpenPGP, OTP, and NDEF protocols.
+Web-based management tool for Feitian security keys. The project includes a React web UI, a Manifest V3 Chrome extension, and a Rust native messaging host.
 
-## Architecture
+## Requirements
 
-This project uses a three-tier architecture:
+- Node.js 18+ and npm 9+
+- Rust and Cargo
+- Chrome or another Chromium-based browser
 
-```
-Web UI (React + Vite + TypeScript)
-        ⇅ window.postMessage / content script
-Chrome Extension (Manifest V3)
-        ⇅ chrome.runtime.connectNative()
-Native Host (Rust binary, JSON-RPC)
-        ⇅ PC/SC (CCID), HIDAPI
-Feitian Security Key (Vendor ID: 0x096e)
-```
+## Setup
 
-## Project Structure
+Install dependencies and build the project:
 
-```
-feitian-sk-manager/
-├── .github/workflows/    # CI/CD pipelines
-├── web/                  # React frontend (Vite + TypeScript)
-├── extension/            # Chrome Extension (Manifest V3)
-├── native/               # Rust native messaging host
-└── docs/                 # Documentation
-```
-
-## Components
-
-### Web UI (`/web`)
-- **Tech Stack**: React 18, TypeScript, Vite
-- **Design**: Black & white minimalist UI with 24px border radius
-- **Features**: Device management, protocol configuration, certificate handling
-
-### Chrome Extension (`/extension`)
-- **Manifest**: V3
-- **Purpose**: Bridge between web UI and native host
-- **Permissions**: nativeMessaging, storage
-
-### Native Host (`/native`)
-- **Language**: Rust
-- **Protocol**: JSON-RPC over stdin/stdout
-- **Libraries**: pcsc (CCID), hidapi (FIDO/OTP), serde_json, tokio
-
-## Development Setup
-
-### Prerequisites
-
-- Node.js 18+ and npm
-- Rust 1.70+ and Cargo
-- Chrome or Edge browser
-
-### Building
-
-#### Web UI
 ```bash
-cd web
 npm install
-npm run dev        # Start dev server
-npm run build      # Production build
+npm run build
 ```
 
-#### Native Host
-```bash
-cd native
-cargo build        # Debug build
-cargo build --release  # Production build
-cargo test         # Run tests
-```
-
-#### Chrome Extension
-```bash
-cd extension
-# Load unpacked extension in Chrome:
-# 1. Navigate to chrome://extensions/
-# 2. Enable "Developer mode"
-# 3. Click "Load unpacked"
-# 4. Select the extension/ directory
-```
-
-### Running Tests
+Start the web UI:
 
 ```bash
-# All components
-npm test           # From root directory
-
-# Individual components
-cd web && npm test
-cd native && cargo test
+npm run dev
 ```
 
-## Installation
+Open the URL shown by Vite, usually `http://localhost:5173`.
 
-### For Users
+To load the extension locally:
 
-1. Install the Chrome Extension from the [Chrome Web Store](#) (coming soon)
-2. Download and install the native host for your platform:
-   - **Windows**: [Download .exe installer](#)
-   - **macOS**: [Download .pkg](#)
-   - **Linux**: [Download .deb or .rpm](#)
+1. Open `chrome://extensions`.
+2. Enable **Developer mode**.
+3. Select **Load unpacked**.
+4. Choose the repository's `extension/` directory.
 
-### For Developers
+The native host must be built and registered before the extension can communicate with a security key:
 
-See [Development Setup](#development-setup) above.
+```bash
+npm run build:native
+./setup-native-host.sh
+```
 
-## Supported Devices
+`setup-native-host.sh` currently targets Chrome on macOS. For other platforms, see [`native/README.md`](native/README.md).
 
-This application supports Feitian security keys with Vendor ID `0x096e`, including:
-- ePass FIDO (PID: 0x0850)
-- ePass FIDO-NFC (PID: 0x0852)
-- BioPass FIDO (PID: 0x0853)
-- AllinPass FIDO (PID: 0x0854)
-- ePass K9 FIDO (PID: 0x0856)
+## Commands
 
-## Protocols Supported
+```bash
+npm run build       # Build the web UI and native host
+npm run test        # Run web and native tests
+npm run lint        # Run web and native linters
+npm run format      # Format web and native code
+```
 
-- **FIDO2 (CTAP2)**: PIN management, credential management, device reset
-- **U2F (CTAP1)**: Registration and authentication
-- **PIV**: Certificate management, key generation, PIN/PUK management
-- **OpenPGP**: Key import/export, card data management
-- **OTP**: HOTP configuration (TOTP coming soon)
-- **NDEF**: NFC data read/write
+## Supported devices
 
-## Contributing
-
-Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details.
+Feitian devices with vendor ID `0x096e` are supported. The native host communicates with devices through HID and PC/SC.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Security
-
-For security concerns, please email security@example.com.
-
-## Acknowledgments
-
-- Inspired by YubiKey Manager and similar tools
-- Built with modern web technologies
-- Designed for security and usability
+MIT — see [`LICENSE`](LICENSE).
